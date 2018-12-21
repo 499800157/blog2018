@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="typo.css">
+    <script src="https://cdn.bootcss.com/marked/0.4.0/marked.js"></script>
+    <style>
+     body{
+         padding: 20px
+     }
+    </style>
+</head>
+<body>
+  <div id="content">
+# 全局属性
+1. 属性strokeDasharray 　虚线的网格　值为字符串类型　内容为数字，可以用空格和逗号隔开
+两个数字　第一个表示　颜色的深浅　第二个数字　虚线的间隔长度
+2. stroke属性
+绘制的颜色　支持rgb格式也英文单词
+3. layout　布局类型
+"horizontal" | "vertical"   
+将Yaxis 的datakey设置为"name"(本来是X轴设置的值)，图像也是出不来的，需要给父元素设置layout属性　layout="vertical"
+而且需要注意组件XAxis和YAxis的type属性值　如Ｙ系坐标需要将type 写成"category"
+4. fill属性
+填充颜色,可以写在dot中也可以直接写在元素上
+5. dot属性
+当设置值时，设置的stroke属性不会生效  
+当其值为false时，不绘制点（拐点 x,y）  
+值可以一个对象　｛｛r : 点的半径，默认应该是3　，　stroke :点的颜色 ,strokeWidth : 绘制点的线宽度｝｝  
+值可以是一个 React Element ,会克隆这个元素来渲染这个点
+
+6. activeDot属性　当图表触发mouseenter事件，并且需要展示 Tooltip 的时候，会展示一个“激活状态的点" 不会有改变的效果　（一般会变成实心）
+
+
+# 组件类
+## 容器组件
+
+1. ### LineChart图表
+> #### 子组件Line组件
+绘制线条  
+属性  
+    - dataKey属性
+    > 描绘的是哪一条线（需要描绘哪些值）,其实就是Ｙ值
+
+    - type属性
+    > 曲线的插值类型，可以接收自定义的函数.默认linner线性
+        1. basis  基础
+        2. basisClosed　前后不连接　会将第二个和倒数第二个连接起来（闭合）
+        3. natural　　自然的　　　圆滑的线连接
+        4. monotone  单调   同natural，没它幅度大
+        5. step    步　　横平竖直连接  stepBefore在其之前拐弯　stepAfter在其之后拐弯
+        6. 自定义Function
+
+    - connectNulls属性
+    > 如果线条不连续,是否需要连接,默认值：false  
+    
+    - label属性
+    > 图形上的文本标签。  默认值：false  
+    当值为 false ，不展示文本标签。  
+    当值为 true，会根据 Line 的属性配置来展示文本标签
+
+    - animationDuration属性
+    > 声明动画的运行时长，单位为毫秒。默认值：1500
+
+2. ### AreaChart图表
+Area组件
+
+## 通用组件
+
+1. ### CartesianGrid组件   
+笛卡尔网格  
+属性:  
+    - horizontal  
+    > 是否展示水平方向的网格线。默认值：true
+    - vertical  
+    > 是否展示竖直方向的网格线。默认值：true
+
+
+2. ### Legend组件
+说明图表的信息，也就是表Ｙ值的名称  
+属性:  
+    -  layout
+    > 图例的放置方向．默认值："horizontal"，水平放置  
+    其他值："vertical" 是垂直方向放置  
+    - align 
+    > 水平方向的对齐方式．默认值："center"    
+    其他值："left" , "right"  
+    - verticalAlign   
+    > 垂直方向的对齐方式。  默认值：'bottom'  
+    其他值："top","bottom"
+    - wrapperStyle  
+    > 可以自定义样式,比如 {{right:-20}},相当于绝对定位的值，距离右侧-20  
+    - payload 
+    > 图例的源数据，通常内部计算，如果用户指定了这个值，会覆盖内部计算的值。  类型：Ａrray
+    格式 : {[{value : "数目",type: 'line' ,id: 'ID01'}]}
+
+3. ### Tooltip组件
+鼠标移入组件中的提示信息　说明x值和Ｙ值
+
+4. ### XAxis组件和YAxis组件
+X轴和Ｙ轴的信息  
+属性：  
+    - type  
+    > 轴的类型：数值轴、类目轴。  
+    XAxis　默认type = "category"  
+    YAxis　默认type = "number"  
+    category  : 将所涉及到的项列出来 （ 一一列出）
+    number : 显示的是区间（自适应）
+
+    - yAxisId
+    > y 轴的唯一 id。  
+    画双轴图时，通过这个属性将轴（YAxis）与线(Line)联系起来，他们的值必须相同才能联系起来，否则会报错.  
+    若不指定(没有设置此属性)的都属于一个组
+
+    - orientation  
+    > 轴的位置。   
+    YAxis 取值：'left' | 'right' , 默认是'left'  
+    XAxis 取值：'bottom' , 'top'，默认是"bottom"
+
+    - domain  
+    > 用在数值轴上（type=number）类型：Array　默认[ 0 ,"auto"]　两个成员，表示他的值域  
+    例如：["dataMin","dataMax"] ["dataＭin - 1000","dataMax + 1024]
+    - tick属性，刻度配置。
+        1. 当值为 false 时，不绘制刻度。
+        2. 当值为对象类型时，会把这个对象解析成刻度的属性配置。
+        3. 当值为 React element，会克隆这个元素来渲染刻度。
+    - allowDuplicatedCategory
+    > 是否允许类目轴有重复的类目。　默认值　：　true
+
+#### 需要注意的点：
+    XAxis的dataKey属性不用设置也是会显示　1，2，3，4，5，6 ...
+
+5. ###  ReferenceLine
+属性　
+    - x 值为横轴上的某一项的名字
+    - y 值为纵轴上的值
+    - stroke　：　"red"　绘制的颜色
+    - label是描述信息　
+    
+
+
+
+
+　
+
+
+
+## 发现细节
+
+1. 在使用垂直方向的图表时，最顶部的类别不显示，需要通过设置图表父元素　margin={{top: 10.91}}需要大于10.90才可以
+
+## 遇到的问题
+1. 纵坐标的值的显示问题？指定最小值和最大值，并且设置间隔和几段
+2. legend组件的显示内容　可以通过payload代替　但是图标显示不出来
+3. CartesianGrid网格是横竖，能不能只要横不要竖
+
+
+
+
+
+
+
+
+
+
+  </div>
+ <script>
+     var box =document.getElementById("content");
+    //  var markdown=` # 实现md文件的网页展示
+    //       md文件的内容
+    //  `;
+    var markdown=box.innerHTML;
+    console.log(markdown);
+    box.innerHTML=marked(markdown);
+
+
+
+ </script>
+</body>
+</html>
